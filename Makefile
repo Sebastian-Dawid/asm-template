@@ -3,8 +3,8 @@ SHELL := sh
 ASM := nasm
 LD := ld
 
-SRC_DIR = .
-BUILD_DIR = ./build
+SRC_DIR = src
+BUILD_DIR = build
 BINARY_NAME = main
 ARGS =
 
@@ -30,7 +30,13 @@ run: $(BUILD_DIR)/$(BINARY_NAME)
 	$(BUILD_DIR)/$(BINARY_NAME) $(ARGS)
 
 debug: $(BUILD_DIR)/$(BINARY_NAME)
-	$(DB) $(BUILD_DIR)/$(BINARY_NAME)
+	@echo "settings set target.source-map $$(pwd)/$(SRC_DIR)/$(SRC_DIR) $$(pwd)/$(SRC_DIR)" > .lldb_settings
+ifeq ($(DB), lldb)
+		$(DB) $(BUILD_DIR)/$(BINARY_NAME) -s .lldb_settings
+else
+		$(DB) $(BUILD_DIR)/$(BINARY_NAME)
+endif
+	@rm .lldb_settings
 
 help:
 	@echo "Usage: make { clean | run | debug | help }"
