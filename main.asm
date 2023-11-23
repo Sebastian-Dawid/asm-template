@@ -16,7 +16,7 @@
 %define SYS_EXIT    60
 
 ;;;===========================================================
-;;; Definitions for stream (STDIN, STDOUT)
+;;; Definitions for streams (STDIN, STDOUT)
 ;;;===========================================================
 %define STDIN       0
 %define STDOUT      1
@@ -40,22 +40,9 @@ arr:
 ;;; Code section
 ;;;===========================================================
 section .text
-    global _start
-
-;;;===========================================================
-;;; Procedure to write the `rdx` bytes at `rsi` to stdout
-;;;===========================================================
-write_to_stdout:
-    push rax
-    push rdi
-    
-    mov rax, SYS_WRITE
-    mov rdi, STDOUT
-    syscall
-
-    pop rdi
-    pop rax
-    ret
+    global _start           ; definition of the entrypoint
+    extern write_to_stdout  ; this procedure is imported from
+                            ; src/print.asm
 
 ;;;===========================================================
 ;;; Entry Point

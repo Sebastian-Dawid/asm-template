@@ -3,18 +3,23 @@ SHELL := sh
 ASM := nasm
 LD := ld
 
+SRC_DIR = .
 BUILD_DIR = ./build
 BINARY_NAME = main
 ARGS =
 
+SRCS_FULL = $(shell find $(SRC_DIR) -maxdepth 1 -name '*.asm')
+SRCS = $(SRCS_FULL:$(SRC_DIR)/%=%)
+OBJS = $(SRCS:%=$(BUILD_DIR)/%.o)
+
 .DEFAULT_GOAL := help
 
-$(BUILD_DIR)/$(BINARY_NAME): $(BUILD_DIR)/$(BINARY_NAME).o
-	$(LD) -m elf_x86_64 -static -o $(BUILD_DIR)/$(BINARY_NAME) $(BUILD_DIR)/$(BINARY_NAME).o
+$(BUILD_DIR)/$(BINARY_NAME): $(OBJS)
+	$(LD) -m elf_x86_64 -static -o $(BUILD_DIR)/$(BINARY_NAME) $(OBJS)
 
-$(BUILD_DIR)/$(BINARY_NAME).o: $(BINARY_NAME).asm
-	mkdir -p $(BUILD_DIR)
-	$(ASM) -g -f elf64 -F dwarf -o $(BUILD_DIR)/$(BINARY_NAME).o $(BINARY_NAME).asm
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%
+	@mkdir -p $(BUILD_DIR)
+	$(ASM) -g -f elf64 -F dwarf -o $@ $<
 
 .PHONY: clean run debug help
 
