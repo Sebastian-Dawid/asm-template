@@ -28,6 +28,11 @@ section .data
 hello_world:
     db "Hello World!", 0x0a ; 13 byte memory block containing
                             ; "Hello World!\n"
+path:
+    db "/etc/hosts", 0
+
+bufsize:
+    db 0x10
 
 ;;;===========================================================
 ;;; Non-initialized data
@@ -36,6 +41,9 @@ section .bss
 arr:
     resb 4                  ; 4 byte memory block
 
+buffer:
+    resb 16
+
 ;;;===========================================================
 ;;; Code section
 ;;;===========================================================
@@ -43,6 +51,8 @@ section .text
     global _start           ; definition of the entrypoint
     extern write_to_stdout  ; this procedure is imported from
                             ; src/print.asm
+    extern read_file        ; this procedure is imported from
+                            ; src/read_file.asm
 
 ;;;===========================================================
 ;;; Entry Point
@@ -62,6 +72,15 @@ _start:
                                 ; memory containing the
                                 ; "Hello World!\n" string
     mov rdx, 0xd
+    call write_to_stdout
+
+    mov rax, bufsize
+    mov rsi, path
+    mov rdi, buffer
+    call read_file
+
+    mov rsi, buffer
+    mov rdx, bufsize
     call write_to_stdout
 
     mov rax, SYS_EXIT
