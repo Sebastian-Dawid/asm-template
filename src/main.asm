@@ -32,7 +32,7 @@ path:
     db "/etc/hosts", 0
 
 bufsize:
-    db 0x10
+    dq 0x10
 
 ;;;===========================================================
 ;;; Non-initialized data
@@ -74,13 +74,13 @@ _start:
     mov rdx, 0xd
     call write_to_stdout
 
-    mov rax, bufsize
+    mov rax, [bufsize]
     mov rsi, path
     mov rdi, buffer
     call read_file
 
     mov rsi, buffer
-    mov rdx, bufsize
+    mov rdx, [bufsize]
     call write_to_stdout
 
     mov rax, SYS_EXIT

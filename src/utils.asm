@@ -4,6 +4,8 @@
 %define SYS_READ    0
 %define SYS_WRITE   1
 %define SYS_OPEN    2
+
+%define STDIN       0
 %define STDOUT      1
 
 ;;;===========================================================
@@ -14,6 +16,7 @@ section .text
                             ; can be called from outside this
                             ; file
     global read_file
+    global read_stdin
 
 ;;;===========================================================
 ;;; Procedure to write the `rdx` bytes at `rsi` to stdout
@@ -25,6 +28,25 @@ write_to_stdout:
     mov rax, SYS_WRITE
     mov rdi, STDOUT
     syscall
+
+    pop rdi
+    pop rax
+    ret
+
+
+;;;===========================================================
+;;; Procedure to read `rdx` bytes from STDIN into the buffer
+;;; at `rsi`. The number of bytes read will be written to `rdx`.
+;;;===========================================================
+read_stdin:
+    push rax
+    push rdi
+
+    mov rax, SYS_READ
+    mov rdi, STDIN
+    syscall
+
+    mov rdx, rax
 
     pop rdi
     pop rax
